@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Satu Hal Lagi — Date Invitation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="page-veil"></div>
+
+<div class="shell page-content">
+  <div class="stage">
+
+    <div class="progress-track fade-in-up"></div>
+
+    <div class="glass-card fade-in-up">
+
+      <p class="eyebrow mb-3" style="text-align:center;">Bab 3 dari 6</p>
+      <h1 class="headline" style="font-size:clamp(1.9rem,5vw,2.6rem); margin:0 0 14px; text-align:center;">
+        Sebelum itu&hellip;
+      </h1>
+      <p class="body-text muted" style="margin:0 0 8px; text-align:center;">
+        Boleh aku tanya satu hal dulu?
+      </p>
+      <p class="body-text" style="margin:0 0 6px; text-align:center; font-weight:600; font-size:1.08rem;">
+        Mau nggak jalan sama aku?
+      </p>
+
+      <div class="chase-zone" id="chase-zone">
+        <button class="btn btn-primary chase-btn" id="mau-btn" style="left:32%;">
+          <i data-lucide="heart" style="width:16px;height:16px;"></i>
+          <span>Mau</span>
+        </button>
+        <button class="btn btn-ghost chase-btn dodge-btn" id="nggak-btn" style="left:68%;">
+          Nggak
+        </button>
+      </div>
+
+      <p class="chase-hint">Coba pilih "Nggak" kalau berani.</p>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/background.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  lucide.createIcons();
+  DI.paintProgress(3, 6);
+
+  /* ---------- The "Nggak" button dodges the cursor / touch ---------- */
+  const zone = document.getElementById("chase-zone");
+  const dodgeBtn = document.getElementById("nggak-btn");
+  const mauBtn = document.getElementById("mau-btn");
+
+  const DODGE_RADIUS = 110; // px — how close before it flees
+
+  function getBtnCenter(btn, zoneRect) {
+    const r = btn.getBoundingClientRect();
+    return {
+      x: r.left + r.width / 2 - zoneRect.left,
+      y: r.top + r.height / 2 - zoneRect.top
+    };
+  }
+
+  function placeRandom(btn, zoneRect, avoidPoint) {
+    const bw = btn.offsetWidth;
+    const bh = btn.offsetHeight;
+    const padding = 8;
+    const maxX = zoneRect.width - bw / 2 - padding;
+    const minX = bw / 2 + padding;
+    const maxY = zoneRect.height - bh / 2 - padding;
+    const minY = bh / 2 + padding;
+
+    let best = null;
+    let bestDist = -1;
+
+    // try a handful of candidates, keep the one farthest from cursor/touch
+    for (let i = 0; i < 8; i++) {
+      const x = minX + Math.random() * Math.max(1, maxX - minX);
+      const y = minY + Math.random() * Math.max(1, maxY - minY);
+      const dist = avoidPoint ? Math.hypot(x - avoidPoint.x, y - avoidPoint.y) : 1;
+      if (dist > bestDist) {
+        bestDist = dist;
+        best = { x, y };
+      }
+    }
+
+    btn.style.left = best.x + "px";
+    btn.style.top = best.y + "px";
+  }
+
+  function maybeFlee(clientX, clientY) {
+    const zoneRect = zone.getBoundingClientRect();
+    const pointerX = clientX - zoneRect.left;
+    const pointerY = clientY - zoneRect.top;
+    const center = getBtnCenter(dodgeBtn, zoneRect);
+    const dist = Math.hypot(pointerX - center.x, pointerY - center.y);
+
+    if (dist < DODGE_RADIUS) {
+      placeRandom(dodgeBtn, zoneRect, { x: pointerX, y: pointerY });
+    }
+  }
+
+  // Desktop: mouse hover nearby
+  zone.addEventListener("mousemove", (e) => {
+    maybeFlee(e.clientX, e.clientY);
+  });
+
+  // Mobile: finger approaching / touching
+  zone.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    maybeFlee(t.clientX, t.clientY);
+  }, { passive: true });
+
+  zone.addEventListener("touchmove", (e) => {
+    const t = e.touches[0];
+    maybeFlee(t.clientX, t.clientY);
+  }, { passive: true });
+
+  // Also flee if someone manages to focus it via keyboard/tab
+  dodgeBtn.addEventListener("focus", () => {
+    const zoneRect = zone.getBoundingClientRect();
+    placeRandom(dodgeBtn, zoneRect, null);
+    dodgeBtn.blur();
+  });
+
+  // Keep it inside bounds if the window resizes
+  window.addEventListener("resize", () => {
+    const zoneRect = zone.getBoundingClientRect();
+    placeRandom(dodgeBtn, zoneRect, null);
+  });
+
+  // If against all odds it gets clicked, gently nudge instead of navigating
+  dodgeBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const zoneRect = zone.getBoundingClientRect();
+    placeRandom(dodgeBtn, zoneRect, null);
+  });
+
+  mauBtn.addEventListener("click", () => {
+    DI.setAnswer("q2b_mau", "Mau");
+    confetti({
+      particleCount: 40,
+      spread: 70,
+      startVelocity: 24,
+      gravity: 0.6,
+      scalar: 0.75,
+      origin: { y: 0.6 },
+      colors: ["#D98CA3", "#F4D6DC", "#E3DAF2", "#E8C77E"]
+    });
+    setTimeout(() => DI.goTo("question3.html"), 500);
+  });
+</script>
+</body>
+</html>

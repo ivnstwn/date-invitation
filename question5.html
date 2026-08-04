@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tempat Favorit — Date Invitation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="page-veil"></div>
+
+<div class="shell page-content">
+  <div class="stage">
+
+    <div class="progress-track fade-in-up"></div>
+
+    <div class="glass-card fade-in-up">
+
+      <p class="eyebrow mb-3">Bab 6 dari 6</p>
+      <h1 class="headline" style="font-size:clamp(1.9rem,5vw,2.6rem); margin:0 0 14px;">
+        Tempat yang paling kamu mau datengin
+      </h1>
+      <p class="body-text muted" style="margin:0 0 30px;">
+        Pilih satu, biar aku bisa siapin rencananya.
+      </p>
+
+      <div class="dropdown" id="place-dropdown">
+        <div class="dropdown-trigger" id="dropdown-trigger">
+          <span id="dropdown-label">Pilih tempat</span>
+          <i data-lucide="chevron-down" class="chev" style="width:18px;height:18px;"></i>
+        </div>
+        <div class="dropdown-panel" id="dropdown-panel">
+          <!-- items injected by JS -->
+        </div>
+      </div>
+
+      <div style="margin-top:34px; display:flex; justify-content:flex-end;">
+        <button id="next-btn" class="btn btn-primary" disabled>
+          <span>Lihat Rencana</span>
+          <i data-lucide="arrow-right" class="icon-bounce" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/background.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  lucide.createIcons();
+  DI.paintProgress(6, 6);
+
+  const places = [
+    { value: "Cafe", icon: "coffee" },
+    { value: "Bioskop", icon: "film" },
+    { value: "Restoran", icon: "utensils" },
+    { value: "Taman", icon: "trees" },
+    { value: "Mall", icon: "shopping-bag" },
+    { value: "Pantai", icon: "waves" },
+    { value: "Terserah kamu", icon: "sparkles" }
+  ];
+
+  const panel = document.getElementById("dropdown-panel");
+  const dropdown = document.getElementById("place-dropdown");
+  const trigger = document.getElementById("dropdown-trigger");
+  const label = document.getElementById("dropdown-label");
+  const nextBtn = document.getElementById("next-btn");
+
+  let selected = DI.getAnswers().q5_place || null;
+
+  function renderItems() {
+    panel.innerHTML = "";
+    places.forEach(p => {
+      const item = document.createElement("div");
+      item.className = "dropdown-item" + (p.value === selected ? " is-active" : "");
+      item.innerHTML = `<i data-lucide="${p.icon}" style="width:16px;height:16px;color:#C06F8A;"></i><span>${p.value}</span>`;
+      item.addEventListener("click", () => {
+        selected = p.value;
+        label.textContent = p.value;
+        nextBtn.disabled = false;
+        DI.setAnswer("q5_place", selected);
+        dropdown.classList.remove("is-open");
+        renderItems();
+        lucide.createIcons();
+      });
+      panel.appendChild(item);
+    });
+    lucide.createIcons();
+  }
+
+  renderItems();
+  if (selected) { label.textContent = selected; nextBtn.disabled = false; }
+
+  trigger.addEventListener("click", () => {
+    dropdown.classList.toggle("is-open");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!dropdown.contains(e.target)) dropdown.classList.remove("is-open");
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (nextBtn.disabled) return;
+    DI.goTo("loading.html");
+  });
+</script>
+</body>
+</html>

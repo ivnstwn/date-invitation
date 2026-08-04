@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Menyusun Rencana — Date Invitation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="page-veil"></div>
+
+<div class="shell page-content">
+  <div class="stage" style="max-width:460px;">
+    <div class="glass-card loading-wrap fade-in-up">
+
+      <div class="loading-ring">
+        <svg viewBox="0 0 84 84">
+          <defs>
+            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#D98CA3" />
+              <stop offset="100%" stop-color="#CFC0E8" />
+            </linearGradient>
+          </defs>
+          <circle class="track" cx="42" cy="42" r="36"></circle>
+          <circle class="fill" id="ring-fill" cx="42" cy="42" r="36"
+            stroke-dasharray="226.19" stroke-dashoffset="226.19"></circle>
+        </svg>
+        <div class="loading-percent" id="percent-label">0%</div>
+      </div>
+
+      <p class="loading-message" id="loading-message">Sebentar ya&hellip;</p>
+
+      <div id="match-reveal" style="display:none; margin-top:18px;">
+        <p class="headline" style="font-size:2rem; margin:0;">Perfect Match</p>
+        <p class="body-text" style="color:#C06F8A; font-weight:600; margin-top:4px;">99.999999%</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/background.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  lucide.createIcons();
+
+  const messages = [
+    "Sebentar ya…",
+    "Aku lagi baca jawaban kamu…",
+    "Lagi nyusun rencana date kita…",
+    "Sedikit lagi…"
+  ];
+  const steps = [5, 18, 42, 67, 89, 100];
+
+  const msgEl = document.getElementById("loading-message");
+  const ringFill = document.getElementById("ring-fill");
+  const percentLabel = document.getElementById("percent-label");
+  const CIRC = 226.19;
+
+  function setProgress(pct) {
+    const offset = CIRC - (pct / 100) * CIRC;
+    ringFill.style.strokeDashoffset = offset;
+    percentLabel.textContent = pct + "%";
+  }
+
+  function fadeMessage(text) {
+    msgEl.style.opacity = "0";
+    setTimeout(() => {
+      msgEl.textContent = text;
+      msgEl.style.opacity = "1";
+    }, 250);
+  }
+
+  async function runSequence() {
+    setProgress(0);
+    await wait(300);
+
+    fadeMessage(messages[0]);
+    setProgress(steps[0]);
+    await wait(700);
+
+    fadeMessage(messages[1]);
+    setProgress(steps[1]);
+    await wait(750);
+
+    setProgress(steps[2]);
+    await wait(650);
+
+    fadeMessage(messages[2]);
+    setProgress(steps[3]);
+    await wait(750);
+
+    fadeMessage(messages[3]);
+    setProgress(steps[4]);
+    await wait(650);
+
+    setProgress(steps[5]);
+    await wait(500);
+
+    // Reveal perfect match
+    msgEl.style.opacity = "0";
+    setTimeout(() => {
+      document.getElementById("match-reveal").style.display = "block";
+    }, 250);
+
+    confetti({
+      particleCount: 60,
+      spread: 80,
+      startVelocity: 28,
+      gravity: 0.65,
+      scalar: 0.8,
+      origin: { y: 0.6 },
+      colors: ["#D98CA3", "#F4D6DC", "#E3DAF2", "#E8C77E", "#FFFFFF"]
+    });
+
+    await wait(2000);
+    DI.goTo("result.html");
+  }
+
+  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  runSequence();
+</script>
+</body>
+</html>

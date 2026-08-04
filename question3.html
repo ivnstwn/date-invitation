@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ajak Jalan — Date Invitation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="page-veil"></div>
+
+<div class="shell page-content">
+  <div class="stage">
+
+    <div class="progress-track fade-in-up"></div>
+
+    <div class="glass-card fade-in-up">
+
+      <p class="eyebrow mb-3">Bab 4 dari 6</p>
+      <h1 class="headline" style="font-size:clamp(1.9rem,5vw,2.6rem); margin:0 0 14px;">
+        Aku mau ajak kamu jalan&hellip;
+      </h1>
+      <p class="body-text muted" style="margin:0 0 30px;">
+        Pilih kegiatan yang paling pengen kita lakuin. Boleh lebih dari satu.
+      </p>
+
+      <div id="options" class="grid grid-cols-2 gap-3">
+        <div class="option-card" data-multi data-value="Cafe">
+          <div class="option-icon"><i data-lucide="coffee"></i></div>
+          <div class="option-label">Cafe</div>
+          <div class="option-check"><i data-lucide="check"></i></div>
+        </div>
+        <div class="option-card" data-multi data-value="Nonton">
+          <div class="option-icon"><i data-lucide="film"></i></div>
+          <div class="option-label">Nonton</div>
+          <div class="option-check"><i data-lucide="check"></i></div>
+        </div>
+        <div class="option-card" data-multi data-value="Makan Enak">
+          <div class="option-icon"><i data-lucide="utensils"></i></div>
+          <div class="option-label">Makan Enak</div>
+          <div class="option-check"><i data-lucide="check"></i></div>
+        </div>
+        <div class="option-card" data-multi data-value="Foto Bareng">
+          <div class="option-icon"><i data-lucide="camera"></i></div>
+          <div class="option-label">Foto Bareng</div>
+          <div class="option-check"><i data-lucide="check"></i></div>
+        </div>
+        <div class="option-card" data-multi data-value="Jalan Malam">
+          <div class="option-icon"><i data-lucide="moon"></i></div>
+          <div class="option-label">Jalan Malam</div>
+          <div class="option-check"><i data-lucide="check"></i></div>
+        </div>
+        <div class="option-card" data-multi data-value="Main Game">
+          <div class="option-icon"><i data-lucide="gamepad-2"></i></div>
+          <div class="option-label">Main Game</div>
+          <div class="option-check"><i data-lucide="check"></i></div>
+        </div>
+      </div>
+
+      <div style="margin-top:34px; display:flex; justify-content:flex-end;">
+        <button id="next-btn" class="btn btn-primary" disabled>
+          <span>Lanjut</span>
+          <i data-lucide="arrow-right" class="icon-bounce" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/background.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  lucide.createIcons();
+  DI.paintProgress(4, 6);
+
+  let selected = new Set(DI.getAnswers().q3_activities || []);
+  const cards = document.querySelectorAll("#options .option-card");
+  const nextBtn = document.getElementById("next-btn");
+
+  function refresh() {
+    cards.forEach(c => c.classList.toggle("is-selected", selected.has(c.dataset.value)));
+    nextBtn.disabled = selected.size === 0;
+  }
+
+  cards.forEach(card => {
+    card.addEventListener("click", () => {
+      const v = card.dataset.value;
+      if (selected.has(v)) selected.delete(v); else selected.add(v);
+      refresh();
+    });
+  });
+
+  refresh();
+
+  nextBtn.addEventListener("click", () => {
+    if (selected.size === 0) return;
+    DI.setAnswer("q3_activities", Array.from(selected));
+    DI.goTo("question4.html");
+  });
+</script>
+</body>
+</html>

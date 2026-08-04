@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pertanyaan Penting — Date Invitation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="page-veil"></div>
+
+<div class="shell page-content">
+  <div class="stage">
+
+    <div class="progress-track fade-in-up"></div>
+
+    <div class="glass-card fade-in-up">
+
+      <p class="eyebrow mb-3">Bab 2 dari 6</p>
+      <h1 class="headline" style="font-size:clamp(1.9rem,5vw,2.6rem); margin:0 0 14px;">
+        Pertanyaan Penting
+      </h1>
+      <p class="body-text muted" style="margin:0 0 30px;">
+        Siapa cowok paling ganteng menurut kamu?
+      </p>
+
+      <div id="options" style="display:flex; flex-direction:column; gap:12px;">
+        <div class="option-card" data-value="Ivan">
+          <div class="option-icon"><i data-lucide="heart"></i></div>
+          <div class="option-label">Ivan</div>
+          <div class="option-check"><i data-lucide="check"></i></div>
+        </div>
+        <div class="option-card" data-value="Tetap Ivan">
+          <div class="option-icon"><i data-lucide="heart"></i></div>
+          <div class="option-label">Tetap Ivan</div>
+          <div class="option-check"><i data-lucide="check"></i></div>
+        </div>
+        <div class="option-card" data-value="Masih Ivan">
+          <div class="option-icon"><i data-lucide="heart"></i></div>
+          <div class="option-label">Masih Ivan</div>
+          <div class="option-check"><i data-lucide="check"></i></div>
+        </div>
+      </div>
+
+      <div style="margin-top:34px; display:flex; justify-content:flex-end;">
+        <button id="next-btn" class="btn btn-primary" disabled>
+          <span>Lanjut</span>
+          <i data-lucide="arrow-right" class="icon-bounce" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/background.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  lucide.createIcons();
+  DI.paintProgress(2, 6);
+
+  let selected = DI.getAnswers().q2_handsome || null;
+  const cards = document.querySelectorAll("#options .option-card");
+  const nextBtn = document.getElementById("next-btn");
+
+  function refresh() {
+    cards.forEach(c => c.classList.toggle("is-selected", c.dataset.value === selected));
+    nextBtn.disabled = !selected;
+  }
+
+  function heartBurst(x, y) {
+    confetti({
+      particleCount: 22,
+      spread: 60,
+      startVelocity: 22,
+      gravity: 0.6,
+      scalar: 0.7,
+      origin: { x, y },
+      colors: ["#D98CA3", "#F4D6DC", "#E3DAF2", "#E8C77E"]
+    });
+  }
+
+  cards.forEach(card => {
+    card.addEventListener("click", (e) => {
+      selected = card.dataset.value;
+      refresh();
+      const rect = card.getBoundingClientRect();
+      heartBurst((rect.left + rect.width / 2) / window.innerWidth, (rect.top + rect.height / 2) / window.innerHeight);
+    });
+  });
+
+  refresh();
+
+  nextBtn.addEventListener("click", () => {
+    if (!selected) return;
+    DI.setAnswer("q2_handsome", selected);
+    DI.goTo("question2b.html");
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Untuk Kamu — Date Invitation</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind (utility helpers only — visual language lives in style.css) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+<!-- Shared stylesheet -->
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- Page transition veil -->
+<div class="page-veil"></div>
+
+<div class="shell page-content">
+  <div class="stage" style="max-width:640px;">
+
+    <div class="text-center">
+
+      <!-- Eyebrow -->
+      <p class="eyebrow fade-in-up mb-5">Sebuah surat kecil</p>
+
+      <!-- Hero headline -->
+      <h1 class="headline fade-in-up" style="font-size:clamp(2.6rem, 8vw, 4.6rem); margin:0 0 22px;">
+        Hi, Ratnaaa...
+      </h1>
+
+      <!-- Subtitle -->
+      <div class="fade-in-up" style="max-width:460px; margin:0 auto;">
+        <p class="body-text" style="font-size:1.02rem;">
+          Aku bikin halaman kecil ini khusus buat kamu.
+          <br><br>
+          Sebenarnya ada satu hal yang pengen aku tanyain.
+          <br>
+          Tapi sebelum itu&hellip;
+          <br><br>
+          Boleh jawab beberapa pertanyaan kecil dulu?
+        </p>
+      </div>
+
+      <!-- Small print -->
+      <p class="small-print fade-in-up" style="margin-top:26px;">
+        Halaman ini cuma dibuat untuk satu orang, yaitu kamu.
+      </p>
+
+      <!-- CTA -->
+      <div class="fade-in-up" style="margin-top:40px;">
+        <button id="start-btn" class="btn btn-primary">
+          <span>Mulai</span>
+          <i data-lucide="arrow-right" class="icon-bounce" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="assets/js/background.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  lucide.createIcons();
+
+  document.getElementById("start-btn").addEventListener("click", function () {
+    DI.goTo("question1.html");
+  });
+</script>
+</body>
+</html>

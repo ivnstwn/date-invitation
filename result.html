@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Date Plan — Date Invitation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<link rel="stylesheet" href="assets/css/style.css">
+
+<style>
+  /* Result page gets a slightly warmer wash on top of the shared scene */
+  .warm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(circle at 50% 20%, rgba(232, 199, 126, 0.10), transparent 60%);
+    pointer-events: none;
+  }
+  .result-card {
+    animation: cardArrive 1s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  @keyframes cardArrive {
+    from { opacity: 0; transform: scale(0.92) translateY(14px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-veil"></div>
+<div class="warm-overlay"></div>
+
+<div class="shell page-content">
+  <div class="stage" style="max-width:560px;">
+
+    <div class="glass-card result-card">
+
+      <p class="eyebrow mb-3" style="text-align:center;">Sudah siap</p>
+      <h1 class="headline" style="font-size:clamp(2.1rem,6vw,3rem); margin:0 0 14px; text-align:center;">
+        Date Plan
+      </h1>
+      <p class="body-text muted" style="text-align:center; margin:0 0 30px;">
+        Berdasarkan semua jawaban kamu, aku udah punya bayangan buat quality time kita nanti.
+      </p>
+
+      <div id="summary">
+        <div class="result-row">
+          <div class="option-icon"><i data-lucide="map-pin"></i></div>
+          <div>
+            <div class="result-row-label">Lokasi</div>
+            <div class="result-row-value" id="val-place">—</div>
+          </div>
+        </div>
+        <div class="result-row">
+          <div class="option-icon"><i data-lucide="sparkles"></i></div>
+          <div>
+            <div class="result-row-label">Aktivitas</div>
+            <div class="result-row-value" id="val-activities">—</div>
+          </div>
+        </div>
+        <div class="result-row">
+          <div class="option-icon"><i data-lucide="calendar"></i></div>
+          <div>
+            <div class="result-row-label">Hari</div>
+            <div class="result-row-value" id="val-date">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Countdown -->
+      <p class="eyebrow" style="text-align:center; margin-top:32px;">Menuju hari itu</p>
+      <div class="countdown-grid">
+        <div class="countdown-cell"><div class="countdown-num" id="cd-days">00</div><div class="countdown-unit">Hari</div></div>
+        <div class="countdown-cell"><div class="countdown-num" id="cd-hours">00</div><div class="countdown-unit">Jam</div></div>
+        <div class="countdown-cell"><div class="countdown-num" id="cd-mins">00</div><div class="countdown-unit">Menit</div></div>
+        <div class="countdown-cell"><div class="countdown-num" id="cd-secs">00</div><div class="countdown-unit">Detik</div></div>
+      </div>
+
+      <p class="body-text" style="text-align:center; margin:26px 0 8px;">
+        Aku nggak sabar buat ketemu kamu.
+      </p>
+      <p class="body-text muted" style="text-align:center; margin:0 0 32px;">
+        Semoga hari itu nanti jadi salah satu hari yang paling menyenangkan buat kita berdua.
+      </p>
+
+      <div style="display:flex; justify-content:center;">
+        <button id="whatsapp-btn" class="btn btn-primary">
+          <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
+          <span>Kasih Tau Aku</span>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="assets/js/background.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  lucide.createIcons();
+
+  const answers = DI.getAnswers();
+
+  const place = answers.q5_place || "—";
+  const activities = (answers.q3_activities || []).join(", ") || "—";
+  const dateDisplay = answers.q4_date_display || "—";
+  const rawDate = answers.q4_date || null;
+
+  document.getElementById("val-place").textContent = place;
+  document.getElementById("val-activities").textContent = activities;
+  document.getElementById("val-date").textContent = dateDisplay;
+
+  /* ---------- Countdown ---------- */
+  function pad(n) { return String(n).padStart(2, "0"); }
+
+  function tickCountdown() {
+    const dEl = document.getElementById("cd-days");
+    const hEl = document.getElementById("cd-hours");
+    const mEl = document.getElementById("cd-mins");
+    const sEl = document.getElementById("cd-secs");
+
+    if (!rawDate) return;
+    const target = new Date(rawDate + "T00:00:00").getTime();
+
+    function update() {
+      const now = Date.now();
+      let diff = Math.max(0, target - now);
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+      const secs = Math.floor((diff / 1000) % 60);
+
+      dEl.textContent = pad(days);
+      hEl.textContent = pad(hours);
+      mEl.textContent = pad(mins);
+      sEl.textContent = pad(secs);
+    }
+
+    update();
+    setInterval(update, 1000);
+  }
+  tickCountdown();
+
+  /* ---------- WhatsApp CTA ---------- */
+  const phoneNumber = "6287837156934"; // ganti dengan nomor WhatsApp tujuan
+
+  document.getElementById("whatsapp-btn").addEventListener("click", function () {
+    confetti({
+      particleCount: 90,
+      spread: 100,
+      startVelocity: 32,
+      gravity: 0.6,
+      scalar: 0.85,
+      origin: { y: 0.55 },
+      colors: ["#D98CA3", "#F4D6DC", "#E3DAF2", "#E8C77E", "#FFFFFF"]
+    });
+
+    const message =
+      "Date Invitation\n\n" +
+      "Hai,\n" +
+      "Aku udah selesai isi semuanya.\n\n" +
+      "Jawabanku:\n\n" +
+      "Siap menjawab:\n" + (answers.q1_ready || "-") + "\n\n" +
+      "Cowok paling ganteng:\n" + (answers.q2_handsome || "-") + "\n\n" +
+      "Aktivitas:\n" + activities + "\n\n" +
+      "Hari:\n" + dateDisplay + "\n\n" +
+      "Tempat:\n" + place + "\n\n" +
+      "Aku tunggu ya.";
+
+    setTimeout(() => {
+      window.open("https://wa.me/" + phoneNumber + "?text=" + encodeURIComponent(message), "_blank");
+    }, 1000);
+  });
+</script>
+</body>
+</html>

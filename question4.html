@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pilih Hari — Date Invitation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="page-veil"></div>
+
+<div class="shell page-content">
+  <div class="stage">
+
+    <div class="progress-track fade-in-up"></div>
+
+    <div class="glass-card fade-in-up">
+
+      <p class="eyebrow mb-3">Bab 5 dari 6</p>
+      <h1 class="headline" style="font-size:clamp(1.9rem,5vw,2.6rem); margin:0 0 14px;">
+        Pilih hari yang memungkinkan
+      </h1>
+      <p class="body-text muted" style="margin:0 0 30px;">
+        Nggak perlu pasti, kira-kira aja dulu boleh kok.
+      </p>
+
+      <div class="option-card" id="date-trigger" style="cursor:pointer;">
+        <div class="option-icon"><i data-lucide="calendar"></i></div>
+        <div class="option-label" id="date-label">Pilih tanggal</div>
+        <div class="option-check" style="opacity:0;"></div>
+      </div>
+
+      <!-- Hidden input flatpickr binds to -->
+      <input type="text" id="date-input" style="position:absolute; opacity:0; pointer-events:none; height:0;">
+
+      <div style="margin-top:34px; display:flex; justify-content:flex-end;">
+        <button id="next-btn" class="btn btn-primary" disabled>
+          <span>Lanjut</span>
+          <i data-lucide="arrow-right" class="icon-bounce" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/background.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  lucide.createIcons();
+  DI.paintProgress(5, 6);
+
+  const nextBtn = document.getElementById("next-btn");
+  const dateLabel = document.getElementById("date-label");
+  const trigger = document.getElementById("date-trigger");
+
+  const savedDate = DI.getAnswers().q4_date || null;
+
+  const fp = flatpickr("#date-input", {
+    minDate: "today",
+    dateFormat: "Y-m-d",
+    altInput: false,
+    disableMobile: true,
+    defaultDate: savedDate,
+    onChange: function (selectedDates, dateStr) {
+      if (!dateStr) return;
+      const d = selectedDates[0];
+      const formatted = d.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+      dateLabel.textContent = formatted;
+      trigger.classList.add("is-selected");
+      nextBtn.disabled = false;
+      DI.setAnswer("q4_date", dateStr);
+      DI.setAnswer("q4_date_display", formatted);
+    }
+  });
+
+  if (savedDate) {
+    const d = new Date(savedDate);
+    dateLabel.textContent = d.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    trigger.classList.add("is-selected");
+    nextBtn.disabled = false;
+  }
+
+  trigger.addEventListener("click", () => fp.open());
+
+  nextBtn.addEventListener("click", () => {
+    if (nextBtn.disabled) return;
+    DI.goTo("question5.html");
+  });
+</script>
+</body>
+</html>

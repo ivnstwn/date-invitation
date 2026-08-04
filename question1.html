@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pertanyaan Pertama — Date Invitation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="page-veil"></div>
+
+<div class="shell page-content">
+  <div class="stage">
+
+    <div class="progress-track fade-in-up"></div>
+
+    <div class="glass-card fade-in-up">
+
+      <p class="eyebrow mb-3">Bab 1 dari 6</p>
+      <h1 class="headline" style="font-size:clamp(1.9rem,5vw,2.6rem); margin:0 0 14px;">
+        Pertanyaan Pertama
+      </h1>
+      <p class="body-text muted" style="margin:0 0 30px;">
+        Apakah kamu siap menjawab beberapa pertanyaan kecil?
+      </p>
+
+      <div id="options" style="display:flex; flex-direction:column; gap:12px;">
+        <div class="option-card" data-value="Iya">
+          <div class="option-icon"><i data-lucide="heart"></i></div>
+          <div class="option-label">Iya</div>
+          <div class="option-check"><i data-lucide="check"></i></div>
+        </div>
+        <div class="option-card" data-value="Banget">
+          <div class="option-icon"><i data-lucide="sparkles"></i></div>
+          <div class="option-label">Banget</div>
+          <div class="option-check"><i data-lucide="check"></i></div>
+        </div>
+      </div>
+
+      <div style="margin-top:34px; display:flex; justify-content:flex-end;">
+        <button id="next-btn" class="btn btn-primary" disabled>
+          <span>Lanjut</span>
+          <i data-lucide="arrow-right" class="icon-bounce" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/background.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  lucide.createIcons();
+  DI.paintProgress(1, 6);
+
+  let selected = DI.getAnswers().q1_ready || null;
+  const cards = document.querySelectorAll("#options .option-card");
+  const nextBtn = document.getElementById("next-btn");
+
+  function refresh() {
+    cards.forEach(c => c.classList.toggle("is-selected", c.dataset.value === selected));
+    nextBtn.disabled = !selected;
+  }
+
+  cards.forEach(card => {
+    card.addEventListener("click", () => {
+      selected = card.dataset.value;
+      refresh();
+    });
+  });
+
+  refresh();
+
+  nextBtn.addEventListener("click", () => {
+    if (!selected) return;
+    DI.setAnswer("q1_ready", selected);
+    DI.goTo("question2.html");
+  });
+</script>
+</body>
+</html>
